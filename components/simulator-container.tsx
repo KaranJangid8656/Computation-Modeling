@@ -15,7 +15,8 @@ export function SimulatorContainer({
             Pumping Lemma Simulator
           </h1>
           <p className="text-muted-foreground text-lg">
-            Interactive visualization of the Pumping Lemma for Regular Languages
+            Interactive visualization of the Pumping Lemma for Context Free
+            Languages
           </p>
         </header>
         {children}
