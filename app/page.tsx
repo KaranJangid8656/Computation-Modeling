@@ -110,13 +110,19 @@ export default function Home() {
     const bCount = pumpedString.match(/b/g)?.length || 0;
     const cCount = pumpedString.match(/c/g)?.length || 0;
     const dCount = pumpedString.match(/d/g)?.length || 0;
-    const hasOtherChars = /[^abcd]/.test(pumpedString);
+    const zeroCount = pumpedString.match(/0/g)?.length || 0;
+    const oneCount = pumpedString.match(/1/g)?.length || 0;
+    const twoCount = pumpedString.match(/2/g)?.length || 0;
+    const hasOtherChars = /[^abcd012]/.test(pumpedString);
 
     newLogs.push(`Character counts in pumped string:`);
     if (aCount > 0) newLogs.push(`  Count of 'a': ${aCount}`);
     if (bCount > 0) newLogs.push(`  Count of 'b': ${bCount}`);
     if (cCount > 0) newLogs.push(`  Count of 'c': ${cCount}`);
     if (dCount > 0) newLogs.push(`  Count of 'd': ${dCount}`);
+    if (zeroCount > 0) newLogs.push(`  Count of '0': ${zeroCount}`);
+    if (oneCount > 0) newLogs.push(`  Count of '1': ${oneCount}`);
+    if (twoCount > 0) newLogs.push(`  Count of '2': ${twoCount}`);
     newLogs.push(`  Has invalid characters: ${hasOtherChars ? "Yes" : "No"}`);
 
     // Basic pattern recognition for common CFL patterns
@@ -125,7 +131,15 @@ export default function Home() {
 
     if (!hasOtherChars) {
       // Check for a^n b^n pattern
-      if (cCount === 0 && dCount === 0 && aCount === bCount && aCount > 0) {
+      if (
+        cCount === 0 &&
+        dCount === 0 &&
+        aCount === bCount &&
+        aCount > 0 &&
+        zeroCount === 0 &&
+        oneCount === 0 &&
+        twoCount === 0
+      ) {
         isValid = true;
         patternType = "a^n b^n";
       }
@@ -134,10 +148,39 @@ export default function Home() {
         dCount === 0 &&
         aCount === bCount &&
         bCount === cCount &&
-        aCount > 0
+        aCount > 0 &&
+        zeroCount === 0 &&
+        oneCount === 0 &&
+        twoCount === 0
       ) {
         isValid = true;
         patternType = "a^n b^n c^n";
+      }
+      // Check for 0^n 1^n pattern
+      else if (
+        aCount === 0 &&
+        bCount === 0 &&
+        cCount === 0 &&
+        dCount === 0 &&
+        twoCount === 0 &&
+        zeroCount === oneCount &&
+        zeroCount > 0
+      ) {
+        isValid = true;
+        patternType = "0^n 1^n";
+      }
+      // Check for 0^n 1^n 2^n pattern
+      else if (
+        aCount === 0 &&
+        bCount === 0 &&
+        cCount === 0 &&
+        dCount === 0 &&
+        zeroCount === oneCount &&
+        oneCount === twoCount &&
+        zeroCount > 0
+      ) {
+        isValid = true;
+        patternType = "0^n 1^n 2^n";
       }
       // Check for ww pattern (even length, first half equals second half)
       else if (pumpedString.length % 2 === 0) {
@@ -150,7 +193,15 @@ export default function Home() {
         }
       }
       // For other patterns, just check if it's well-formed (no adjacent different chars for some patterns)
-      else if (aCount > 0 || bCount > 0 || cCount > 0 || dCount > 0) {
+      else if (
+        aCount > 0 ||
+        bCount > 0 ||
+        cCount > 0 ||
+        dCount > 0 ||
+        zeroCount > 0 ||
+        oneCount > 0 ||
+        twoCount > 0
+      ) {
         isValid = true;
         patternType = "custom pattern";
       }
