@@ -145,59 +145,12 @@ export function VisualizationPanel({
         </p>
       </Card>
 
-      {/* Conditions */}
-      <Card className="p-4 bg-muted">
-        <h3 className="text-sm font-semibold mb-3 text-foreground">
-          Lemma Conditions
-        </h3>
-        <div className="space-y-2 text-sm">
-          <div
-            className={`flex items-center justify-between p-2 rounded ${
-              condition1
-                ? "bg-green-50 dark:bg-green-950"
-                : "bg-red-50 dark:bg-red-950"
-            }`}
-          >
-            <span className="font-mono">
-              |vxy| ≤ p → |{vxyLen}| ≤ {pumpingLength}
-            </span>
-            <span
-              className={
-                condition1
-                  ? "text-green-600 dark:text-green-400 font-semibold"
-                  : "text-red-600 dark:text-red-400 font-semibold"
-              }
-            >
-              {condition1 ? "✓" : "✗"}
-            </span>
-          </div>
-          <div
-            className={`flex items-center justify-between p-2 rounded ${
-              condition2
-                ? "bg-green-50 dark:bg-green-950"
-                : "bg-red-50 dark:bg-red-950"
-            }`}
-          >
-            <span className="font-mono">|vy| ≥ 1 → |{vyLen}| ≥ 1</span>
-            <span
-              className={
-                condition2
-                  ? "text-green-600 dark:text-green-400 font-semibold"
-                  : "text-red-600 dark:text-red-400 font-semibold"
-              }
-            >
-              {condition2 ? "✓" : "✗"}
-            </span>
-          </div>
-        </div>
-      </Card>
-
-      {/* Result */}
+{/* Result */}
       {result && (
         <Card
           className={`p-4 border-2 ${
             result.status === "VALID"
-              ? "border-green-500 bg-green-50 dark:bg-green-950"
+              ? "border-green-300 bg-green-50/50 dark:bg-green-900/30 dark:border-green-700/50"
               : "border-red-500 bg-red-50 dark:bg-red-950"
           }`}
         >
@@ -215,7 +168,7 @@ export function VisualizationPanel({
               <h4
                 className={`text-lg font-bold px-3 py-2 rounded-lg ${
                   result.status === "VALID"
-                    ? "text-green-900 dark:text-green-100"
+                    ? "text-green-800 dark:text-green-200"
                     : "text-red-900 dark:text-red-100"
                 }`}
               >
@@ -224,7 +177,7 @@ export function VisualizationPanel({
               <p
                 className={`text-lg font-bold px-2 py-2 rounded-lg ${
                   result.status === "VALID"
-                    ? "text-green-900 dark:text-green-100 bg-green-100 dark:bg-green-800"
+                    ? "text-green-700 dark:text-green-200 bg-green-50 dark:bg-green-900/40"
                     : "text-red-900 dark:text-red-100 bg-red-100 dark:bg-red-800"
                 }`}
               >

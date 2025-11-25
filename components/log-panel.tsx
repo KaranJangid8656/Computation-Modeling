@@ -19,7 +19,7 @@ export function LogPanel({ logs }: LogPanelProps) {
       <h3 className="text-sm font-semibold mb-3 text-foreground">
         Simulation Log
       </h3>
-      <div className="bg-background rounded p-4 font-mono text-xs overflow-y-auto max-h-96 space-y-1 border border-border">
+      <div className="bg-background rounded p-4 font-mono text-xs overflow-y-visible space-y-1 border border-border">
         {logs.length === 0 ? (
           <p className="text-muted-foreground">
             Run a simulation to see the log...

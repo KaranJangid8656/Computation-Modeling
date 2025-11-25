@@ -5,6 +5,7 @@ import { SimulatorContainer } from "@/components/simulator-container";
 import { InputPanel } from "@/components/input-panel";
 import { VisualizationPanel } from "@/components/visualization-panel";
 import { LogPanel } from "@/components/log-panel";
+import { Card } from "@/components/ui/card";
 
 export default function Home() {
   const [string, setString] = useState("aaabbb"); // Default for a^n b^n pattern
@@ -17,6 +18,10 @@ export default function Home() {
   const [pumpingMultiplier, setPumpingMultiplier] = useState(1);
   const [isRunning, setIsRunning] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
+  
+  // Calculate lengths for conditions
+  const vxyLen = vLen + xLen + yLen;
+  const vyLen = vLen + yLen;
   const [result, setResult] = useState<{
     status: string;
     message: string;
@@ -260,7 +265,7 @@ export default function Home() {
 
   return (
     <SimulatorContainer>
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 xl:gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 xl:gap-6 w-full">
         <div className="xl:col-span-3">
           <InputPanel
             string={string}
@@ -297,8 +302,53 @@ export default function Home() {
           />
         </div>
 
-        <div className="xl:col-span-4">
+        <div className="xl:col-span-4 space-y-4">
           <LogPanel logs={logs} />
+          <Card className="p-4 bg-muted">
+            <h3 className="text-sm font-semibold mb-3 text-foreground">
+              Lemma Conditions
+            </h3>
+            <div className="space-y-2 text-sm">
+              <div
+                className={`flex items-center justify-between p-2 rounded ${
+                  vxyLen <= pumpingLength
+                    ? "bg-green-50/50 dark:bg-green-900/30"
+                    : "bg-red-50 dark:bg-red-950"
+                }`}
+              >
+                <span className="font-mono">
+                  |vxy| ≤ p → |{vxyLen}| ≤ {pumpingLength}
+                </span>
+                <span
+                  className={
+                    vxyLen <= pumpingLength
+                      ? "text-green-600 dark:text-green-400 font-semibold"
+                      : "text-red-600 dark:text-red-400 font-semibold"
+                  }
+                >
+                  {vxyLen <= pumpingLength ? "✓" : "✗"}
+                </span>
+              </div>
+              <div
+                className={`flex items-center justify-between p-2 rounded ${
+                  vyLen >= 1
+                    ? "bg-green-50/50 dark:bg-green-900/30"
+                    : "bg-red-50 dark:bg-red-950"
+                }`}
+              >
+                <span className="font-mono">|vy| ≥ 1 → |{vyLen}| ≥ 1</span>
+                <span
+                  className={
+                    vyLen >= 1
+                      ? "text-green-600 dark:text-green-400 font-semibold"
+                      : "text-red-600 dark:text-red-400 font-semibold"
+                  }
+                >
+                  {vyLen >= 1 ? "✓" : "✗"}
+                </span>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
     </SimulatorContainer>
