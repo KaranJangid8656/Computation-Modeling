@@ -206,13 +206,7 @@ The simulator adapts to different screen sizes:
 - **Tablet**: Stacked layout with adjusted widths
 - **Mobile**: Single-column layout
 
-## 🤝 Contributing
 
-We welcome contributions! Here's how you can help:
-
-1. **Report Issues**: Found a bug? [Create an issue](https://github.com/KaranJangid8656/Computation-Modeling/issues)
-2. **Suggest Features**: Have an idea? [Open a feature request](https://github.com/KaranJangid8656/Computation-Modeling/issues)
-3. **Submit Pull Requests**: Fixed something? [Submit a PR](https://github.com/KaranJangid8656/Computation-Modeling/pulls)
 
 ### Development Setup
 
@@ -231,18 +225,9 @@ We welcome contributions! Here's how you can help:
 
 ## 📖 Educational Resources
 
-### Further Reading
 
-- [Formal Languages and Automata Theory](https://en.wikipedia.org/wiki/Formal_language)
-- [Pumping Lemma for Context-Free Languages](https://en.wikipedia.org/wiki/Pumping_lemma_for_context-free_languages)
-- [Context-Free Grammar](https://en.wikipedia.org/wiki/Context-free_grammar)
 
-### Video Tutorials
 
-- [Pumping Lemma Explained](https://www.youtube.com/watch?v=example)
-- [CFL Pumping Lemma Examples](https://www.youtube.com/watch?v=example)
-
-## 🐛 Troubleshooting
 
 ### Common Issues
 
@@ -271,18 +256,5 @@ This project is licensed under the [MIT License](LICENSE). You are free to:
 - Icons by [Lucide](https://lucide.dev/)
 - UI components by [shadcn/ui](https://ui.shadcn.com/)
 
-## 📞 Contact
 
-Have questions or feedback? Reach out:
-- [GitHub Issues](https://github.com/KaranJangid8656/Computation-Modeling/issues)
-- [Email](mailto:your.email@example.com)
 
----
-
-<div align="center">
-
-Made with ❤️ for Computer Science Education
-
-[⬆ Back to Top](#pumping-lemma-simulator-for-context-free-languages)
-
-</div>
