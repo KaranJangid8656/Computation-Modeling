@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SimulatorContainer } from "@/components/simulator-container";
 import { InputPanel } from "@/components/input-panel";
 import { VisualizationPanel } from "@/components/visualization-panel";
@@ -26,6 +26,12 @@ export default function Home() {
     status: string;
     message: string;
   } | null>(null);
+
+  // Clear results when configuration changes
+  useEffect(() => {
+    setResult(null);
+    setLogs([]);
+  }, [string, pumpingLength, uLen, vLen, xLen, yLen, zLen]);
 
   const handleRun = () => {
     setIsRunning(true);
@@ -130,65 +136,76 @@ export default function Home() {
     if (twoCount > 0) newLogs.push(`  Count of '2': ${twoCount}`);
     newLogs.push(`  Has invalid characters: ${hasOtherChars ? "Yes" : "No"}`);
 
-    // Basic pattern recognition for common CFL patterns
+    // Enhanced pattern recognition for common CFL patterns
     let isValid = false;
     let patternType = "unknown";
+    let patternReason = "";
 
-    if (!hasOtherChars) {
+    if (hasOtherChars) {
+      patternReason = "Contains invalid characters";
+    } else {
       // Check for a^n b^n pattern
       if (
         cCount === 0 &&
         dCount === 0 &&
-        aCount === bCount &&
-        aCount > 0 &&
         zeroCount === 0 &&
         oneCount === 0 &&
         twoCount === 0
       ) {
-        isValid = true;
-        patternType = "a^n b^n";
+        if (aCount > 0 && bCount > 0 && aCount === bCount) {
+          if (/^a+[^a]*b+$/.test(pumpedString)) {
+            isValid = true;
+            patternType = "a^n b^n";
+            patternReason = `String follows a^${aCount} b^${bCount} pattern`;
+          } else {
+            patternReason = `Character order doesn't match a^n b^n pattern`;
+          }
+        } else if (aCount > 0 || bCount > 0) {
+          patternReason = `a count (${aCount}) does not match b count (${bCount})`;
+        }
       }
-      // Check for a^n b^n c^n pattern
-      else if (
-        dCount === 0 &&
-        aCount === bCount &&
-        bCount === cCount &&
-        aCount > 0 &&
-        zeroCount === 0 &&
-        oneCount === 0 &&
-        twoCount === 0
-      ) {
-        isValid = true;
-        patternType = "a^n b^n c^n";
+      
+      // Check for a^n b^n c^n pattern if not already valid
+      if (!isValid && dCount === 0 && zeroCount === 0 && oneCount === 0 && twoCount === 0) {
+        if (aCount > 0 && bCount > 0 && cCount > 0 && aCount === bCount && bCount === cCount) {
+          if (/^a+[^a]*b+[^b]*c+$/.test(pumpedString)) {
+            isValid = true;
+            patternType = "a^n b^n c^n";
+            patternReason = `String follows a^${aCount} b^${bCount} c^${cCount} pattern`;
+          } else {
+            patternReason = patternReason || "Character order doesn't match a^n b^n c^n pattern";
+          }
+        }
       }
-      // Check for 0^n 1^n pattern
-      else if (
-        aCount === 0 &&
-        bCount === 0 &&
-        cCount === 0 &&
-        dCount === 0 &&
-        twoCount === 0 &&
-        zeroCount === oneCount &&
-        zeroCount > 0
-      ) {
-        isValid = true;
-        patternType = "0^n 1^n";
+
+      // Check for 0^n 1^n pattern if not already valid
+      if (!isValid && aCount === 0 && bCount === 0 && cCount === 0 && dCount === 0 && twoCount === 0) {
+        if (zeroCount > 0 && oneCount > 0 && zeroCount === oneCount) {
+          if (/^0+[^0]*1+$/.test(pumpedString)) {
+            isValid = true;
+            patternType = "0^n 1^n";
+            patternReason = `String follows 0^${zeroCount} 1^${oneCount} pattern`;
+          } else {
+            patternReason = patternReason || "Character order doesn't match 0^n 1^n pattern";
+          }
+        }
       }
-      // Check for 0^n 1^n 2^n pattern
-      else if (
-        aCount === 0 &&
-        bCount === 0 &&
-        cCount === 0 &&
-        dCount === 0 &&
-        zeroCount === oneCount &&
-        oneCount === twoCount &&
-        zeroCount > 0
-      ) {
-        isValid = true;
-        patternType = "0^n 1^n 2^n";
+
+      // Check for 0^n 1^n 2^n pattern if not already valid
+      if (!isValid && aCount === 0 && bCount === 0 && cCount === 0 && dCount === 0) {
+        if (zeroCount > 0 && oneCount > 0 && twoCount > 0 && zeroCount === oneCount && oneCount === twoCount) {
+          if (/^0+[^0]*1+[^1]*2+$/.test(pumpedString)) {
+            isValid = true;
+            patternType = "0^n 1^n 2^n";
+            patternReason = `String follows 0^${zeroCount} 1^${oneCount} 2^${twoCount} pattern`;
+          } else {
+            patternReason = patternReason || "Character order doesn't match 0^n 1^n 2^n pattern";
+          }
+        }
       }
-      // Check for ww pattern (even length, first half equals second half)
-      else if (pumpedString.length % 2 === 0) {
+
+      // Check for ww pattern (even length, first half equals second half) if not already valid
+      if (!isValid && pumpedString.length % 2 === 0) {
         const mid = pumpedString.length / 2;
         const firstHalf = pumpedString.substring(0, mid);
         const secondHalf = pumpedString.substring(mid);
@@ -213,49 +230,27 @@ export default function Home() {
     }
 
     newLogs.push(``);
+    newLogs.push(`Pattern detected: ${patternType}`);
+    
     if (isValid) {
       newLogs.push(`✅ VALID: The pumped string belongs to the language.`);
-      newLogs.push(`Pattern detected: ${patternType}`);
-      newLogs.push(
-        `The decomposition satisfies the Pumping Lemma for this pattern.`
-      );
+      newLogs.push(`Pattern: ${patternType}`);
+      newLogs.push(`The decomposition satisfies the Pumping Lemma for this pattern.`);
       setResult({
         status: "VALID",
         message: `The pumped string is in the language (${patternType})`,
       });
     } else {
-      // For educational purposes, if both pumping lemma conditions are satisfied,
-      // consider it valid even if the specific pattern isn't recognized
-      if (condition1 && condition2) {
-        newLogs.push(`✅ VALID: Both pumping lemma conditions are satisfied.`);
-        newLogs.push(`The decomposition meets the formal requirements.`);
-        setResult({
-          status: "VALID",
-          message: "The pumped string is in the language",
-        });
+      newLogs.push(`Is valid: No`);
+      if (patternReason) {
+        newLogs.push(`Reason: ${patternReason}`);
       } else {
-        newLogs.push(
-          `❌ INVALID: The pumped string does NOT belong to the language.`
-        );
-        newLogs.push(
-          `Pattern analysis failed - string doesn't match expected format.`
-        );
-        if (hasOtherChars) {
-          newLogs.push(
-            `Reason: Contains invalid characters for typical CFL patterns.`
-          );
-        } else if (pumpedString.length === 0) {
-          newLogs.push(`Reason: Empty string.`);
-        } else {
-          newLogs.push(
-            `Reason: Character counts don't satisfy any recognized CFL pattern.`
-          );
-        }
-        setResult({
-          status: "INVALID",
-          message: "The pumped string is NOT in the language",
-        });
+        newLogs.push(`Reason: Character counts don't satisfy any recognized CFL pattern.`);
       }
+      setResult({
+        status: "INVALID",
+        message: patternReason || "The pumped string is NOT in the language",
+      });
     }
 
     newLogs.push(`=== Simulation Complete ===`);

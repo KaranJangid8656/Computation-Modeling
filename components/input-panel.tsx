@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -182,6 +183,59 @@ export function InputPanel({
     x: "bg-purple-100 text-purple-900 dark:bg-purple-900 dark:text-purple-100",
     y: "bg-orange-100 text-orange-900 dark:bg-orange-900 dark:text-orange-100",
     z: "bg-pink-100 text-pink-900 dark:bg-pink-900 dark:text-pink-100",
+  };
+
+  const StepperInput = ({
+    id,
+    value,
+    onChange,
+    disabled,
+    max,
+    className,
+  }: {
+    id: string;
+    value: number;
+    onChange: (next: number) => void;
+    disabled?: boolean;
+    max: number;
+    className?: string;
+  }) => {
+    const dec = () => onChange(Math.max(0, value - 1));
+    const inc = () => onChange(Math.min(max, value + 1));
+    return (
+      <div className="relative w-full">
+        <Input
+          id={id}
+          type="number"
+          min={0}
+          max={max}
+          value={value}
+          onChange={(e) => onChange(Math.max(0, Math.min(max, Number.parseInt(e.target.value) || 0)))}
+          disabled={disabled}
+          className={`w-full pr-12 font-mono text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${className || ""}`}
+        />
+        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex flex-col items-center gap-0">
+          <button
+            type="button"
+            onClick={inc}
+            disabled={disabled || value >= max}
+            className="grid place-items-center h-4 w-5 rounded border border-input bg-background/60 dark:bg-neutral-800/60 text-foreground hover:bg-accent/50 transition-transform duration-150 hover:scale-110 disabled:opacity-40"
+            aria-label="Increment"
+          >
+            <ChevronUp className="h-3 w-3" />
+          </button>
+          <button
+            type="button"
+            onClick={dec}
+            disabled={disabled || value <= 0}
+            className="grid place-items-center h-4 w-5 rounded border border-input bg-background/60 dark:bg-neutral-800/60 text-foreground hover:bg-accent/50 transition-transform duration-150 hover:scale-110 disabled:opacity-40"
+            aria-label="Decrement"
+          >
+            <ChevronDown className="h-3 w-3" />
+          </button>
+        </div>
+      </div>
+    );
   };
 
   const updateSegment = (
@@ -518,27 +572,37 @@ export function InputPanel({
                 <Label htmlFor={label} className="text-xs text-foreground">
                   {label}
                 </Label>
-                <Input
+                <StepperInput
                   id={label}
-                  type="number"
-                  min="0"
-                  max={string.length}
                   value={value}
-                  onChange={(e) =>
-                    set(Math.max(0, Number.parseInt(e.target.value) || 0))
-                  }
-                  className={`font-mono text-sm ${segmentColors[segment]}`}
+                  onChange={(next) => set(Math.max(0, Math.min(string.length, next)))}
                   disabled={isRunning}
+                  max={string.length}
+                  className={`${segmentColors[segment]}`}
                 />
               </div>
             ))}
             <div>
-              <Label className="text-xs text-foreground">z length</Label>
-              <div
-                className={`px-3 py-2 rounded border border-input text-sm font-mono ${segmentColors.z}`}
-              >
-                {zLen}
-              </div>
+              <Label htmlFor="z-length" className="text-xs text-foreground">
+                z length
+              </Label>
+              <StepperInput
+                id="z-length"
+                value={zLen}
+                onChange={(next) => {
+                  // z can borrow from y while keeping u,v,x fixed and total constant
+                  const allowedMax = yLen + zLen; // can't exceed combined y+z
+                  const newZLen = Math.max(0, Math.min(allowedMax, next));
+                  // Adjust y to keep total length constant
+                  const delta = newZLen - zLen;
+                  const newYLen = Math.max(0, yLen - delta);
+                  setZLen(newZLen);
+                  if (newYLen !== yLen) setYLen(newYLen);
+                }}
+                disabled={isRunning}
+                max={yLen + zLen}
+                className={`${segmentColors.z}`}
+              />
             </div>
           </div>
           {!isValidPartition && string.length > 0 && (
